@@ -27,12 +27,11 @@ public class PlayerScript : MonoBehaviour {
 		}
 
 		//jump
-		bool up = Input.GetKey (KeyCode.W) || Input.GetKey (KeyCode.UpArrow);
-		RaycastHit2D[] collisions = Physics2D.RaycastAll(gameObject.transform.position, Vector2.down, groundHeight);
-		bool onGround = collisions.Length > 1; //TODO improve
+		bool up = Input.GetKeyDown (KeyCode.W) || Input.GetKeyDown (KeyCode.UpArrow);
+		//this currently only checks directly under the player's center, need to check all positions to the sides too
+		bool onGround = Physics2D.OverlapPoint (new Vector2(gameObject.transform.position.x, gameObject.transform.position.y) + Vector2.down * groundHeight) != null;
 		if(up && onGround)
 		{
-			//TODO sometimes this applies twice for some reason
 			rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
 		}
 	}
