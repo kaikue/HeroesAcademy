@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerScript : MonoBehaviour {
 
 	public Transform couch;
+	public Text healthText;
+	private int health;
 
 	private const bool LEFT = false;
 	private const bool RIGHT = !LEFT;
@@ -18,6 +21,8 @@ public class PlayerScript : MonoBehaviour {
 		rigidBody = gameObject.GetComponent<Rigidbody2D> ();
 		groundHeight = gameObject.GetComponent<PolygonCollider2D>().bounds.size.y / 2 + 0.05f;
 		dir = RIGHT;
+		health = 100;
+		setHealthText();
 	}
 	
 	void Update () {
@@ -46,8 +51,14 @@ public class PlayerScript : MonoBehaviour {
 
 		//couch
 		bool space = Input.GetKeyDown(KeyCode.Space);
-		if (space) {
+		if (space && health > 10) { //doesn't let you go below 10 health
 			Instantiate(couch, gameObject.transform.position, Quaternion.identity);
+			health = health - 10;
+			setHealthText();
 		}
+	}
+
+	void setHealthText() {
+		healthText.text = "Health: " + health.ToString ();
 	}
 }
