@@ -16,6 +16,7 @@ public class PlayerScript : MonoBehaviour {
 	private float jumpHeight = 5;
 	private float groundHeight;
 	private bool dir;
+	private float pressedTime;
 
 	void Start () {
 		rigidBody = gameObject.GetComponent<Rigidbody2D> ();
@@ -49,10 +50,14 @@ public class PlayerScript : MonoBehaviour {
 			rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
 		}
 
-		//couch
-		bool space = Input.GetKeyDown(KeyCode.Space);
-		if (space && health > 10) { //doesn't let you go below 10 health
-			hurt(10);
+		//hold space to spawn couch
+		if (Input.GetKeyDown(KeyCode.Space)) {
+			pressedTime = Time.time;
+		}
+		if (Input.GetKeyUp (KeyCode.Space)) {
+			int timeDiff = (int)((Time.time - pressedTime) * 10);
+			print (timeDiff);
+			hurt (timeDiff);
 		}
 	}
 
