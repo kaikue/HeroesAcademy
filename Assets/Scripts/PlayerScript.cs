@@ -22,7 +22,7 @@ public class PlayerScript : MonoBehaviour {
 		groundHeight = gameObject.GetComponent<PolygonCollider2D>().bounds.size.y / 2 + 0.05f;
 		dir = LEFT;
 		health = 100;
-		setHealthText();
+		updateHealthText();
 	}
 	
 	void Update () {
@@ -52,18 +52,22 @@ public class PlayerScript : MonoBehaviour {
 		//couch
 		bool space = Input.GetKeyDown(KeyCode.Space);
 		if (space && health > 10) { //doesn't let you go below 10 health
-			Vector3 couchpos = gameObject.transform.position;
-			Vector3 offset = (dir == LEFT ? Vector3.left : Vector3.right) * 2;
-			couchpos += offset;
-			GameObject spawned = ((Transform)Instantiate(couch, couchpos, Quaternion.identity)).gameObject;
-			Vector2 force = (dir == LEFT ? Vector2.left : Vector2.right) * 500;
-			spawned.GetComponent<Rigidbody2D> ().AddForce (force);
-			health = health - 10;
-			setHealthText();
+			hurt(10);
 		}
 	}
 
-	void setHealthText() {
+	void hurt(int damage) {
+		Vector3 couchpos = gameObject.transform.position;
+		Vector3 offset = (dir == LEFT ? Vector3.left : Vector3.right) * 2;
+		couchpos += offset;
+		GameObject spawned = ((Transform)Instantiate(couch, couchpos, Quaternion.identity)).gameObject;
+		Vector2 force = (dir == LEFT ? Vector2.left : Vector2.right) * 50 * damage + Vector2.up * 20 * damage;
+		spawned.GetComponent<Rigidbody2D> ().AddForce (force);
+		health -= damage;
+		updateHealthText();
+	}
+
+	void updateHealthText() {
 		healthText.text = "Health: " + health.ToString ();
 	}
 }
