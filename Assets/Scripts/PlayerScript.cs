@@ -20,7 +20,7 @@ public class PlayerScript : MonoBehaviour {
 	void Start () {
 		rigidBody = gameObject.GetComponent<Rigidbody2D> ();
 		groundHeight = gameObject.GetComponent<PolygonCollider2D>().bounds.size.y / 2 + 0.05f;
-		dir = RIGHT;
+		dir = LEFT;
 		health = 100;
 		setHealthText();
 	}
@@ -52,7 +52,12 @@ public class PlayerScript : MonoBehaviour {
 		//couch
 		bool space = Input.GetKeyDown(KeyCode.Space);
 		if (space && health > 10) { //doesn't let you go below 10 health
-			Instantiate(couch, gameObject.transform.position, Quaternion.identity);
+			Vector3 couchpos = gameObject.transform.position;
+			Vector3 offset = (dir == LEFT ? Vector3.left : Vector3.right) * 2;
+			couchpos += offset;
+			GameObject spawned = ((Transform)Instantiate(couch, couchpos, Quaternion.identity)).gameObject;
+			Vector2 force = (dir == LEFT ? Vector2.left : Vector2.right) * 500;
+			spawned.GetComponent<Rigidbody2D> ().AddForce (force);
 			health = health - 10;
 			setHealthText();
 		}
