@@ -20,10 +20,12 @@ public class PlayerScript : MonoBehaviour {
 	private bool dir;
 	private float pressedTime;
 
+	public Sprite[] couches;
+
 	void Start () {
 		rigidBody = gameObject.GetComponent<Rigidbody2D> ();
 		groundHeight = gameObject.GetComponent<Collider2D>().bounds.size.y / 2 + 0.05f;
-		playerWidth = gameObject.GetComponent<Collider2D> ().bounds.size.x / 2;
+		playerWidth = gameObject.GetComponent<Collider2D> ().bounds.size.x / 2 - 0.02f;
 		dir = LEFT;
 		health = 100;
 		updateHealthText();
@@ -92,6 +94,7 @@ public class PlayerScript : MonoBehaviour {
 		GameObject spawned = ((Transform)Instantiate(couch, couchpos, Quaternion.identity)).gameObject;
 		Vector2 force = (dir == LEFT ? Vector2.left : Vector2.right) * 50 * damage + Vector2.up * 20 * damage;
 		spawned.GetComponent<Rigidbody2D> ().AddForce (force);
+		spawned.GetComponent<SpriteRenderer> ().sprite = couches [Random.Range (0, couches.Length)];
 		health -= damage;
 		updateHealthText();
 	}
