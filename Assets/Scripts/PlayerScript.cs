@@ -35,14 +35,19 @@ public class PlayerScript : MonoBehaviour {
 
 		//jump
 		bool up = Input.GetKeyDown (KeyCode.W) || Input.GetKeyDown (KeyCode.UpArrow);
-		//this currently only checks directly under the player's center, need to check all positions to the sides too
-		bool onGround = Physics2D.OverlapPoint (new Vector2(gameObject.transform.position.x, gameObject.transform.position.y) + Vector2.down * groundHeight) != null;
-		if (!onGround)
-			onGround = Physics2D.OverlapPoint (new Vector2(gameObject.transform.position.x + playerWidth, gameObject.transform.position.y) + Vector2.down * groundHeight) != null;
-		if (!onGround)
-			onGround = Physics2D.OverlapPoint (new Vector2(gameObject.transform.position.x - playerWidth, gameObject.transform.position.y) + Vector2.down * groundHeight) != null;
-		if(up && onGround)
-		{
+
+		//check below feet & to sides to see if the player is on the ground
+		bool onGround = false;
+		float[] footPoses = new float[] {
+			gameObject.transform.position.x - playerWidth,
+			gameObject.transform.position.x,
+			gameObject.transform.position.x + playerWidth
+		};
+		foreach(float footPos in footPoses) {
+			onGround |= Physics2D.OverlapPoint (new Vector2(footPos, gameObject.transform.position.y) + Vector2.down * groundHeight) != null;
+		}
+
+		if(up && onGround) {
 			rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
 		}
 
@@ -50,15 +55,11 @@ public class PlayerScript : MonoBehaviour {
 		bool left = Input.GetKey (KeyCode.A) || Input.GetKey (KeyCode.LeftArrow);
 		bool right = Input.GetKey (KeyCode.D) || Input.GetKey (KeyCode.RightArrow);
 		if (left && !right) {
-//			if (onGround) {
-				rigidBody.AddForce (new Vector2 (-speed, 0));
-				dir = LEFT;
-//			}
+			rigidBody.AddForce (new Vector2 (-speed, 0));
+			dir = LEFT;
 		} else if (right && !left) {
-//			if (onGround) {
-				rigidBody.AddForce (new Vector2 (speed, 0));
-				dir = RIGHT;
-//			} 
+			rigidBody.AddForce (new Vector2 (speed, 0));
+			dir = RIGHT;
 		} else {
 			//slow to a stop
 			rigidBody.velocity = new Vector2 (rigidBody.velocity.x * 0.75f, rigidBody.velocity.y);
@@ -86,14 +87,13 @@ public class PlayerScript : MonoBehaviour {
 		}
 	}
 
-	void hurt(int damage) {
+	public void hurt(int damage) {
 		Vector3 couchpos = gameObject.transform.position;
 		couchpos.z += 0.1f; //keep player sprite in front of couch sprite
 		Vector3 offset = (dir == LEFT ? Vector3.left : Vector3.right) * 2;
 		couchpos += offset;
 		GameObject spawned = ((Transform)Instantiate(couch, couchpos, Quaternion.identity)).gameObject;
 		Vector2 force = (dir == LEFT ? Vector2.left : Vector2.right) * 500 * damage + Vector2.up * 200 * damage;
-		print ("force " + force);
 		spawned.GetComponent<Rigidbody2D> ().AddForce (force);
 		spawned.GetComponent<SpriteRenderer> ().sprite = couches [Random.Range (0, couches.Length)];
 		health -= damage;
