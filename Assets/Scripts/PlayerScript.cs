@@ -78,9 +78,9 @@ public class PlayerScript : MonoBehaviour {
 			if (health > 1) {
 				int timeDiff = (int)((Time.time - pressedTime) * 10) + 1;
 				//adjust couch trajectory if health is too low
-				if (health < timeDiff)
+				if (health < timeDiff) {
 					timeDiff = health - 1;
-				print (timeDiff);
+				}
 				hurt (timeDiff);
 			}
 		}
@@ -92,7 +92,8 @@ public class PlayerScript : MonoBehaviour {
 		Vector3 offset = (dir == LEFT ? Vector3.left : Vector3.right) * 2;
 		couchpos += offset;
 		GameObject spawned = ((Transform)Instantiate(couch, couchpos, Quaternion.identity)).gameObject;
-		Vector2 force = (dir == LEFT ? Vector2.left : Vector2.right) * 50 * damage + Vector2.up * 20 * damage;
+		Vector2 force = (dir == LEFT ? Vector2.left : Vector2.right) * 500 * damage + Vector2.up * 200 * damage;
+		print ("force " + force);
 		spawned.GetComponent<Rigidbody2D> ().AddForce (force);
 		spawned.GetComponent<SpriteRenderer> ().sprite = couches [Random.Range (0, couches.Length)];
 		health -= damage;
