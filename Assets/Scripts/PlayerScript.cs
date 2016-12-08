@@ -22,6 +22,9 @@ public class PlayerScript : MonoBehaviour {
 
 	public Sprite[] couches;
 
+	public Sprite leftSprite;
+	public Sprite rightSprite;
+
 	void Start () {
 		rigidBody = gameObject.GetComponent<Rigidbody2D> ();
 		groundHeight = gameObject.GetComponent<Collider2D>().bounds.size.y / 2 + 0.05f;
@@ -85,6 +88,13 @@ public class PlayerScript : MonoBehaviour {
 				hurt (timeDiff);
 			}
 		}
+
+		//face correct direction
+		if (left)
+			this.GetComponent<SpriteRenderer> ().sprite = leftSprite;
+		else if (right)
+			this.GetComponent<SpriteRenderer> ().sprite = rightSprite;
+
 	}
 
 	public void hurt(int damage) {
