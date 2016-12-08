@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour {
 
@@ -90,7 +91,7 @@ public class PlayerScript : MonoBehaviour {
 				if (health < timeDiff) {
 					timeDiff = health - 1;
 				}
-				hurt (timeDiff);
+				hurt (timeDiff, false);
 			}
 		}
 
@@ -102,13 +103,46 @@ public class PlayerScript : MonoBehaviour {
 
 	}
 
-	public void hurt(int damage) {
+	public void hurt(int damage, bool enemyInduced) {
+		bool enemyToLeft = false;
+		if (enemyInduced) {
+			//find closest enemy, which is the attacker
+			GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+			float dist = 1000000000f;
+			GameObject attacker = null;
+			foreach (GameObject enemy in enemies) {
+				Vector2 enemyPos = enemy.transform.position;
+				Vector2 pcPos = this.transform.position;
+				Vector2 diff = enemyPos - pcPos;
+				float d = Mathf.Sqrt(diff.x * diff.x + diff.y * diff.y);
+				if (d < dist) {
+					dist = d;
+					attacker = enemy;
+				}
+			}
+			if (attacker.transform.position.x < this.transform.position.x)
+				enemyToLeft = true;
+			else
+				enemyToLeft = false;
+		}
 		Vector3 couchpos = gameObject.transform.position;
 		couchpos.z += 0.1f; //keep player sprite in front of couch sprite
 		Vector3 offset = (dir == LEFT ? Vector3.left : Vector3.right) * 2;
+		if (enemyInduced) {
+			if (enemyToLeft)
+				offset = Vector3.right * 2;
+			else
+				offset = Vector3.left * 2;
+		}
 		couchpos += offset;
 		GameObject spawned = ((Transform)Instantiate(couch, couchpos, Quaternion.identity)).gameObject;
 		Vector2 force = (dir == LEFT ? Vector2.left : Vector2.right) * 500 * damage + Vector2.up * 200 * damage;
+		if (enemyInduced) {
+			if (enemyToLeft)
+				force = Vector2.right * 500 * damage + Vector2.up * 200 * damage;
+			else
+				force = Vector2.left * 500 * damage + Vector2.up * 200 * damage;
+		}
 		spawned.GetComponent<Rigidbody2D> ().AddForce (force);
 		spawned.GetComponent<SpriteRenderer> ().sprite = couches [Random.Range (0, couches.Length)];
 		health -= damage;
@@ -117,5 +151,7 @@ public class PlayerScript : MonoBehaviour {
 
 	void updateHealthText() {
 		healthText.text = "Health: " + health.ToString ();
+		if (health <= 0.0f)
+			SceneManager.LoadScene ("ObstacleCourse");
 	}
 }

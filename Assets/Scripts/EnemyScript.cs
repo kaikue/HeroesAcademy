@@ -73,7 +73,7 @@ public class EnemyScript : MonoBehaviour {
 			}
 		}
 		else if (collision.gameObject.tag == "Player") {
-			player.GetComponent<PlayerScript>().hurt(damage);
+			player.GetComponent<PlayerScript>().hurt(damage, true);
 		}
 	}
 }
