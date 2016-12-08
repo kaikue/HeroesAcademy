@@ -43,12 +43,17 @@ public class PlayerScript : MonoBehaviour {
 		bool onGround = false;
 		float[] footPoses = new float[] {
 			gameObject.transform.position.x - playerWidth,
-			gameObject.transform.position.x,
+//			gameObject.transform.position.x,
 			gameObject.transform.position.x + playerWidth
 		};
-		foreach(float footPos in footPoses) {
-			onGround |= Physics2D.OverlapPoint (new Vector2(footPos, gameObject.transform.position.y) + Vector2.down * groundHeight) != null;
-		}
+		Vector2[] footEnds = new Vector2[] {
+			new Vector2 (footPoses [0], this.transform.position.y - groundHeight),
+			new Vector2 (footPoses [1], this.transform.position.y - groundHeight),
+		};
+		onGround = Physics2D.Linecast (footEnds [0], footEnds [1]);
+//		foreach(float footPos in footPoses) {
+//			onGround |= Physics2D.OverlapPoint (new Vector2(footPos, gameObject.transform.position.y) + Vector2.down * groundHeight) != null;
+//		}
 
 		if(up && onGround) {
 			rigidBody.AddForce(new Vector2(0, jumpHeight), ForceMode2D.Impulse);
