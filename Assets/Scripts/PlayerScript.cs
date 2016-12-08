@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class PlayerScript : MonoBehaviour {
 
+	private Animator anim;
+
 	public Transform couch;
 	public Text healthText;
 	private int health;
@@ -23,10 +25,8 @@ public class PlayerScript : MonoBehaviour {
 
 	public Sprite[] couches;
 
-	public Sprite leftSprite;
-	public Sprite rightSprite;
-
 	void Start () {
+		anim = gameObject.GetComponent<Animator> ();
 		rigidBody = gameObject.GetComponent<Rigidbody2D> ();
 		groundHeight = gameObject.GetComponent<Collider2D>().bounds.size.y / 2 + 0.05f;
 		playerWidth = gameObject.GetComponent<Collider2D> ().bounds.size.x / 2 - 0.02f;
@@ -95,11 +95,16 @@ public class PlayerScript : MonoBehaviour {
 			}
 		}
 
-		//face correct direction
+		//animate
 		if (left)
-			this.GetComponent<SpriteRenderer> ().sprite = leftSprite;
+			anim.SetBool ("faceLeft", true);
 		else if (right)
-			this.GetComponent<SpriteRenderer> ().sprite = rightSprite;
+			anim.SetBool ("faceLeft", false);
+		if (onGround && (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D) 
+			|| Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow)))
+			anim.SetBool ("walking", true);
+		else
+			anim.SetBool ("walking", false);
 
 	}
 
